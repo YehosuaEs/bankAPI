@@ -11,7 +11,13 @@ import javax.persistence.Embeddable;
 @NoArgsConstructor
 @Embeddable
 public class Address {
-    private String streetAndNum;
+    private String fullAddress;
     private String city;
     private String zipCode;
+
+    public Address(String fullAddress, String city, String zipCode) {
+        this.fullAddress = fullAddress;
+        this.city = city;
+        this.zipCode = zipCode;
+    }
 }

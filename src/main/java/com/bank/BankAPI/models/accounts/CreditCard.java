@@ -26,14 +26,14 @@ public class CreditCard extends Account {
     @AttributeOverrides({
             @AttributeOverride(name = "currency", column = @Column(name = "interest_rate_cc_currency")),
             @AttributeOverride(name = "amount", column = @Column(name = "interest_rate_cc_amount"))})
-    private Money interestRateCC = new Money(BigDecimal.valueOf(0.2)); //interestRate less than 0.2 but not lower than 0.1
+    private Money interestRate = new Money(BigDecimal.valueOf(0.2)); //interestRate less than 0.2 but not lower than 0.1
     //private LocalDate interestRateCCDate;
 
 
-    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money creditLimit, Money interestRateCC) {
+    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money creditLimit, Money interestRate) {
         super(balance, secretKey, primaryOwner, secondaryOwner);
         setCreditLimit(creditLimit);
-        setInterestRateCC(interestRateCC);
+        setInterestRate(interestRate);
     }
 
     // ----------- Setting the creditLimit not more than 100000
@@ -47,17 +47,17 @@ public class CreditCard extends Account {
     }
 
     // ----------- Setting the interestRateCC not lower than 0.1
-    public void setInterestRateCC(Money interestRateCC) {
-        if (interestRateCC.getAmount().doubleValue() < 0.1 || interestRateCC.getAmount().doubleValue() > 0.2) {
+    public void setInterestRate(Money interestRate) {
+        if (interestRate.getAmount().doubleValue() < 0.1 || interestRate.getAmount().doubleValue() > 0.2) {
             throw new IllegalArgumentException("Interest Rate should be between 0.1 and 0.2");
             //this.interestRateCC = new Money(BigDecimal.valueOf(0.1));
         } else {
-            this.interestRateCC = interestRateCC;
+            this.interestRate = interestRate;
         }
     }
 
-    public Money getInterestRateCC() {
-        return interestRateCC;
+    public Money getInterestRate() {
+        return interestRate;
     }
 
     //METODS interestRate
@@ -76,7 +76,7 @@ public class CreditCard extends Account {
         int months = period.getYears() * 12 + period.getMonths();
         //BigDecimal roundInterestRate = roundedNum(BigDecimal.valueOf(getInterestRateCC().getAmount().doubleValue())).multiply(BigDecimal.valueOf(months));
         //super.setBalance(new Money(getBalance().getAmount()));
-        BigDecimal roundInterestRate = roundedNum(BigDecimal.valueOf(getInterestRateCC().getAmount().doubleValue()));
+        BigDecimal roundInterestRate = roundedNum(BigDecimal.valueOf(getInterestRate().getAmount().doubleValue()));
         BigDecimal amountBalance = new Money(BigDecimal.valueOf(super.getBalance().getAmount().doubleValue())).getAmount(); //Si se puede acceder al al getBalance así?
         Money totalInterestRateInTime = new Money(amountBalance.add(amountBalance).multiply(roundInterestRate)); // si se castean los big decimals de esta forma?
         for (int i = 0; i < months; i++) {

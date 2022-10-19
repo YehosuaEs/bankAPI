@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -21,28 +19,28 @@ public class Savings extends Account {
     @AttributeOverrides({
             @AttributeOverride(name = "currency", column = @Column(name = "minim_balance_currency")),
             @AttributeOverride(name = "amount", column = @Column(name = "minim_balance_amount"))})
-    private Money minimBalance = new Money(BigDecimal.valueOf(1000)); // 1000 but not lower than 100
+    private Money minBalance = new Money(BigDecimal.valueOf(1000)); // 1000 but not lower than 100
 
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "currency", column = @Column(name = "interest_rate_s_currency")),
             @AttributeOverride(name = "amount", column = @Column(name = "interest_rate_s_amount"))})
-    private Money interestRateS = new Money(BigDecimal.valueOf(0.0025)); // With a max 0.5 Interest
+    private Money interestRate = new Money(BigDecimal.valueOf(0.0025)); // With a max 0.5 Interest
     //private LocalDate interestRateDateS;
 
     @Enumerated(EnumType.STRING)
     private Status savingsStatus = Status.ACTIVE;
 
     //eliminar penalty fee del constructor
-    public Savings(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money minimBalance, Money interestRateS) {
+    public Savings(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money minBalance, Money interestRate) {
         super(balance, secretKey, primaryOwner, secondaryOwner);
-        setMinimBalance(minimBalance);
-        setInterestRateS(interestRateS);
+        setMinBalance(minBalance);
+        setInterestRate(interestRate);
     }
 
-    public Savings(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money minimBalance) {
+    public Savings(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money minBalance) {
         super(balance, secretKey, primaryOwner, secondaryOwner);
-        this.minimBalance = minimBalance;
+        this.minBalance = minBalance;
     }
 
     public Savings(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
@@ -50,27 +48,39 @@ public class Savings extends Account {
     }
 
     // ----------- Setting the minimBalance not lower than 100
-    public void setMinimBalance(Money minimBalance) {
+    public void setMinBalance(Money minBalance) {
         //if (minimBalance.getAmount().compareTo(new BigDecimal(100)) < 0) {
-        if (minimBalance.getAmount().doubleValue() < 100) {
+        if (minBalance.getAmount().doubleValue() < 100) {
             System.err.println("Erro in the balance set");
             throw new IllegalArgumentException("Minimum balance should be greater than 100");
             //this.minimBalance = new Money(BigDecimal.valueOf(100));
         } else {
-            this.minimBalance = minimBalance;
+            this.minBalance = minBalance;
         }
     }
 
     // ----------- Setting the interesetRateSavings not more than 0.5
-    public void setInterestRateS(Money interestRateS) {
-        if (interestRateS.getAmount().doubleValue() > 0.5 || interestRateS.getAmount().doubleValue() < 0 ) {
+    public void setInterestRate(Money interestRate) {
+        if (interestRate.getAmount().doubleValue() > 0.5 || interestRate.getAmount().doubleValue() < 0 ) {
             throw new IllegalArgumentException("Interest rate can't be greater than 0.5 and can't be negative");
             //this.interestRateS = new Money(BigDecimal.valueOf(0.5));
         } else {
-            this.interestRateS = interestRateS;
+            this.interestRate = interestRate;
         }
     }
 
+    /*If any account drops below the minimumBalance, the penaltyFee
+    should be deducted from the balance automatically*/
+    @Override
+    public void setBalance(Money balance) {
+        if (minBalance == null) {
+            minBalance = new Money(BigDecimal.valueOf(1000));
+        }
+        if(balance.getAmount().compareTo(minBalance.getAmount()) < 0){
+            balance.getAmount().subtract(getPenaltyFee().getAmount());
+        }
+        super.setBalance(balance);
+    }
 
     //Método para interestRate
     /*Interest on savings accounts is added to the account annually at the rate of specified
@@ -83,9 +93,6 @@ public class Savings extends Account {
 
 
     // Metodo para MinimBalance PenaltyFee
-    /*If any account drops below the minimumBalance, the penaltyFee
-    should be deducted from the balance automatically*/
-
     // ME ESTA DANDP PROBLEMAS
     /* @Override
     public void setBalance(Money balance) {

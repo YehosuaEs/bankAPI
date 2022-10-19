@@ -21,7 +21,7 @@ public class Checking extends Account {
     @AttributeOverrides({
             @AttributeOverride(name = "currency", column = @Column(name = "min_balance_currency")),
             @AttributeOverride(name = "amount", column = @Column(name = "min_balance_amount"))})
-    private final Money minBalance = new Money(BigDecimal.valueOf(250));
+    private  Money minBalance = new Money(BigDecimal.valueOf(250));
 
     @Embedded
     @AttributeOverrides({
@@ -42,6 +42,9 @@ public class Checking extends Account {
     the penaltyFee should be deducted from the balance automatically*/
     @Override
     public void setBalance(Money balance) {
+        if (minBalance == null) {
+            minBalance = new Money(BigDecimal.valueOf(250));
+        }
         if(balance.getAmount().compareTo(minBalance.getAmount()) < 0){
             balance.getAmount().subtract(getPenaltyFee().getAmount());
         }

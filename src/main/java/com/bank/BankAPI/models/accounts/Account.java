@@ -22,7 +22,9 @@ public abstract class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Embedded
+    @NotNull
     @AttributeOverrides({
             @AttributeOverride(name = "currency", column = @Column(name = "balance_currency")),
             @AttributeOverride(name = "amount", column = @Column(name = "balance_amount"))})
@@ -34,6 +36,7 @@ public abstract class Account {
             @AttributeOverride(name = "amount", column = @Column(name = "penalty_fee_amount"))})
     private final Money penaltyFee = new Money(BigDecimal.valueOf(40));
 
+    @NotNull
     private String secretKey;
     @ManyToOne
     @JoinColumn(name = "primary_owner")
