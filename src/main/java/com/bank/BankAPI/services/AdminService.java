@@ -2,9 +2,11 @@ package com.bank.BankAPI.services;
 
 import com.bank.BankAPI.models.AccountHolder;
 import com.bank.BankAPI.models.DTO.AccountDTO;
+import com.bank.BankAPI.models.DTO.AccountHolderDTO;
 import com.bank.BankAPI.models.DTO.ThirdPartyDTO;
 import com.bank.BankAPI.models.ThirdParty;
 import com.bank.BankAPI.models.accounts.*;
+import com.bank.BankAPI.models.others.Address;
 import com.bank.BankAPI.models.others.Money;
 import com.bank.BankAPI.repositories.*;
 import com.bank.BankAPI.services.interfaces.AdminServiceInterface;
@@ -16,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Set;
 
@@ -24,10 +27,16 @@ public class AdminService implements AdminServiceInterface {
 
     @Autowired
     AccountRepository accountRepository;
+    @Autowired
+    CheckingRepository checkingRepository;
+    @Autowired
+    SavingsRepository savingsRepository;
+    @Autowired
+    CreditCardRepository creditCardRepository;
+
 
     @Autowired
     AccountHolderRepository accountHolderRepository;
-
     @Autowired
     ThirdPartyRepository thirdPartyRepository;
 
@@ -39,9 +48,9 @@ public class AdminService implements AdminServiceInterface {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The Account with the  given ID does not exist");
     }
 
-    public Account updateBalanceFromAccounts(Long id, Money newBalance) {
+    public Account updateBalanceFromAccounts(Long id, Money balance) {
         Account accountX = accountRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        accountX.setBalance(newBalance);
+        accountX.setBalance(balance);
         return accountRepository.save(accountX);
     }
 
@@ -52,17 +61,17 @@ public class AdminService implements AdminServiceInterface {
 
 
     // ---- CREATE ACCOUNTS
-    public Checking addAccountCheckingWithDTO(AccountDTO accountDTO) {
-        // LocalDate now = LocalDate.now();
-        // LocalDate birthday = accountHolderRepository.findById(); //acceder a la edad guardada del accountHolder en main
-        // java.time.Period period = java.time.Period.between(super.getCreationDate(), now);
-        // falta el checo de la edad
+    public Account addAccountCheckingWithDTO(AccountDTO accountDTO) {
         BigDecimal balancePre = new BigDecimal(accountDTO.getBalance());
         Money balance = new Money(balancePre);
         AccountHolder primaryOwner = accountHolderRepository.findById(accountDTO.getPrimaryOwnerId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         AccountHolder secondaryOwner = null;
         if (accountDTO.getSecondaryOwnerId() != null) {
             secondaryOwner = accountHolderRepository.findById(accountDTO.getSecondaryOwnerId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        }
+        if(Period.between(primaryOwner.getBirthDate(), LocalDate.now()).getYears() < 24){
+            StudentChecking studentChecking = new StudentChecking(balance, accountDTO.getSecretKey(), primaryOwner, secondaryOwner);
+            return  accountRepository.save(studentChecking);
         }
         Checking newChecking = new Checking(balance, accountDTO.getSecretKey(), primaryOwner, secondaryOwner);
         return accountRepository.save(newChecking);
@@ -81,7 +90,8 @@ public class AdminService implements AdminServiceInterface {
         BigDecimal interestRateInput = new BigDecimal(accountDTO.getInterestRate());
         Money interestRate = new Money(interestRateInput);
         Savings savingInput = new Savings(balance, accountDTO.getSecretKey(), primaryOwner, secondaryOwner, minimBalance, interestRate);
-        return accountRepository.save(savingInput);
+        savingsRepository.save(savingInput);
+        return accountRepository.save(savingInput); //debería guardarlo en el Savings? y lodemas igual?
     }
 
     public CreditCard addAccountCreditCardWithDTO(AccountDTO accountDTO) {
@@ -97,6 +107,7 @@ public class AdminService implements AdminServiceInterface {
         BigDecimal interestRateInput = new BigDecimal(accountDTO.getInterestRate());
         Money interestRate = new Money(interestRateInput);
         CreditCard creditCardInput = new CreditCard(balance, accountDTO.getSecretKey(), primaryOwner, secondaryOwner, creditLimit, interestRate);
+        creditCardRepository.save(creditCardInput);
         return accountRepository.save(creditCardInput);
     }
 
@@ -105,11 +116,29 @@ public class AdminService implements AdminServiceInterface {
         accountRepository.deleteById(id);
     }
 
+
+    // ---- CRREATE THIRDPARTY
     @Override
     public ThirdParty addThirdParty(ThirdPartyDTO thirdPartyDTO) {
         String userName = thirdPartyDTO.getUserName();
         String hashedKey = thirdPartyDTO.getHashedKey();
         ThirdParty newThirdParty = new ThirdParty(userName, hashedKey);
         return thirdPartyRepository.save(newThirdParty);
+    }
+
+    // ---- CRREATE ACCOUNTHOLDER
+    public AccountHolder createAccountHolderWITHDTO(AccountHolderDTO accountDTO){
+        if (LocalDate.now().getYear() - accountDTO.getBirthDate().getYear() < 18) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"The AccountHolder must be 18 years old or older.");
+        }
+        String name = accountDTO.getUserName();
+        LocalDate birthDate = accountDTO.getBirthDate();
+        Address mainAddress = new Address(accountDTO.getAddress(), accountDTO.getCity(), accountDTO.getZipCode());
+        Address secondaryAddress = null;
+        if(accountDTO.getSecondaryAddress() != null){
+            secondaryAddress = new Address(accountDTO.getSecondaryAddress(), accountDTO.getSecondaryCity(), accountDTO.getSecondaryZipCode());
+        }
+        AccountHolder newAccountHolder = new AccountHolder(name, birthDate, mainAddress, secondaryAddress);
+        return accountHolderRepository.save(newAccountHolder);
     }
 }

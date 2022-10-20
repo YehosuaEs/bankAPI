@@ -5,7 +5,7 @@ target/
 !**/src/test/**/target/
 
 ### Environment Variables ###
-env.properties
+.env.properties
 
 ### STS ###
 .apt_generated

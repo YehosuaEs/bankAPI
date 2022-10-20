@@ -1,6 +1,8 @@
 package com.bank.BankAPI.controllers;
 
+import com.bank.BankAPI.models.AccountHolder;
 import com.bank.BankAPI.models.DTO.AccountDTO;
+import com.bank.BankAPI.models.DTO.AccountHolderDTO;
 import com.bank.BankAPI.models.DTO.ThirdPartyDTO;
 import com.bank.BankAPI.models.ThirdParty;
 import com.bank.BankAPI.models.accounts.Account;
@@ -8,6 +10,7 @@ import com.bank.BankAPI.models.accounts.Checking;
 import com.bank.BankAPI.models.accounts.CreditCard;
 import com.bank.BankAPI.models.accounts.Savings;
 import com.bank.BankAPI.models.others.Money;
+import com.bank.BankAPI.services.interfaces.AccountHolderServiceInterface;
 import com.bank.BankAPI.services.interfaces.AdminServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +26,6 @@ public class AdminController {
 
     @Autowired
     AdminServiceInterface adminService;
-
 
 
     // ---- GET BY ID
@@ -45,7 +47,7 @@ public class AdminController {
     // ---- CREATE ACCOUNTS (Checking, Saving, CreditCard)
     @PostMapping("/admin/accounts/add_checking")
     @ResponseStatus(HttpStatus.CREATED)
-    public Checking addCheckingAccount(@RequestBody @Valid AccountDTO account) {
+    public Account addCheckingAccount(@RequestBody @Valid AccountDTO account) {
         return adminService.addAccountCheckingWithDTO(account);
     }
 
@@ -63,11 +65,12 @@ public class AdminController {
 
 
     // ---- UPDATE BALANCE ACCOUNTS BY ID
-    @PatchMapping("/admin/accounts/updateBalance/{id}/")
-    @ResponseStatus(HttpStatus.OK)
-    public Account updateBalanceFromAccount(@PathVariable Long id, @RequestBody String newBalance) {
-        BigDecimal balance = new BigDecimal(newBalance);
-        return adminService.updateBalanceFromAccounts(id, new Money(balance));
+    @PatchMapping("/admin/accounts/updateBalance")
+    @ResponseStatus(HttpStatus.OK) // Para editar el dinero en el body hay que meter un dto en el parametro
+    public Account updateBalanceFromAccount(@RequestParam Long id, @RequestParam String balance) {
+        BigDecimal balancePre = new BigDecimal(balance);
+        Money newBalance = new Money(balancePre);
+        return adminService.updateBalanceFromAccounts(id, newBalance);
     }
 
 
@@ -89,6 +92,13 @@ public class AdminController {
     @ResponseStatus(HttpStatus.CREATED)
     public ThirdParty addThirdParty(@RequestBody ThirdPartyDTO thirdPartyDTO){
         return  adminService.addThirdParty(thirdPartyDTO);
+    }
+
+    // ---- CREATE ACCOUNHOLDER
+    @PostMapping("/admin/account_holder/")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountHolder addCheckingAccountHolder(@RequestBody @Valid AccountHolderDTO account){
+       return adminService.createAccountHolderWITHDTO(account);
     }
 
 
