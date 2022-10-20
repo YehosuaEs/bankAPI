@@ -19,7 +19,6 @@ public class AccountDTO {
     private String address;
     private String city;
     private String zipCode;
-
     private String secondaryAddress;
     private String secondaryCity;
     private String secondaryZipCode;

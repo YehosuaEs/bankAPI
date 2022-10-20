@@ -3,6 +3,7 @@ package com.bank.BankAPI.controllers;
 import com.bank.BankAPI.models.AccountHolder;
 import com.bank.BankAPI.models.DTO.AccountDTO;
 import com.bank.BankAPI.models.DTO.AccountHolderDTO;
+import com.bank.BankAPI.models.DTO.TransferAccountDTO;
 import com.bank.BankAPI.models.accounts.Account;
 import com.bank.BankAPI.models.accounts.Checking;
 import com.bank.BankAPI.models.others.Money;
@@ -25,10 +26,16 @@ public class AccountHolderController {
     @Autowired
     AccountRepository accountRepository;
 
-    @GetMapping("/account-holder/balance/{id}")
+    @GetMapping("/account_holder/balance/{id}")
     @ResponseStatus(HttpStatus.FOUND)
     public Money getCheckingBalance(@PathVariable Long id) {
         return accountHolderService.getBalanceFromAccountHolder(id);
+    }
+
+    @PatchMapping("/account_holder/transfer/")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Money transferFromAccountHolderToOther(@RequestBody TransferAccountDTO transferAccountDTO){
+        return accountHolderService.makeTransferWithAccountDTO(transferAccountDTO);
     }
 
 
