@@ -40,7 +40,6 @@ public class CreditCard extends Account {
     public void setCreditLimit(Money creditLimit) {
         if (creditLimit.getAmount().doubleValue() < 100 || creditLimit.getAmount().doubleValue() > 100000) {
             throw new IllegalArgumentException("Credit Limit should  be between 100 and 100000");
-            //this.creditLimit = new Money(BigDecimal.valueOf((100000)));
         } else {
             this.creditLimit = creditLimit;
         }
@@ -50,7 +49,6 @@ public class CreditCard extends Account {
     public void setInterestRate(Money interestRate) {
         if (interestRate.getAmount().doubleValue() < 0.1 || interestRate.getAmount().doubleValue() > 0.2) {
             throw new IllegalArgumentException("Interest Rate should be between 0.1 and 0.2");
-            //this.interestRateCC = new Money(BigDecimal.valueOf(0.1));
         } else {
             this.interestRate = interestRate;
         }

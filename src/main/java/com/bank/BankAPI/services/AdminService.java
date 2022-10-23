@@ -30,10 +30,11 @@ public class AdminService implements AdminServiceInterface {
     @Autowired
     CheckingRepository checkingRepository;
     @Autowired
+    StudentCheckingRepository studentCheckingRepository;
+    @Autowired
     SavingsRepository savingsRepository;
     @Autowired
     CreditCardRepository creditCardRepository;
-
 
     @Autowired
     AccountHolderRepository accountHolderRepository;
@@ -71,9 +72,11 @@ public class AdminService implements AdminServiceInterface {
         }
         if(Period.between(primaryOwner.getBirthDate(), LocalDate.now()).getYears() < 24){
             StudentChecking studentChecking = new StudentChecking(balance, accountDTO.getSecretKey(), primaryOwner, secondaryOwner);
+            studentCheckingRepository.save(studentChecking);
             return  accountRepository.save(studentChecking);
         }
         Checking newChecking = new Checking(balance, accountDTO.getSecretKey(), primaryOwner, secondaryOwner);
+        checkingRepository.save(newChecking);
         return accountRepository.save(newChecking);
     }
 

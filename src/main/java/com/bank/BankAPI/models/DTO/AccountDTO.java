@@ -32,6 +32,13 @@ public class AccountDTO {
         this.interestRate = interestRates;
     }
 
+    public AccountDTO(String balance, String secretKey, Long primaryOwnerId, Long secondaryOwnerId) {
+        this.balance = balance;
+        this.secretKey = secretKey;
+        this.primaryOwnerId = primaryOwnerId;
+        this.secondaryOwnerId = secondaryOwnerId;
+    }
+
     public String getBalance() {
         return balance;
     }
