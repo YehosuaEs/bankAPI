@@ -30,5 +30,6 @@ public interface AdminServiceInterface {
      void deleteAccountById(Long id);
 
      ThirdParty addThirdParty(ThirdPartyDTO thirdPartyDTO);
+     List<ThirdParty> getAllThirdPartiesByAdmin();
      AccountHolder createAccountHolderWITHDTO(AccountHolderDTO accountDTO);
 }

@@ -93,6 +93,12 @@ public class AdminController {
     public ThirdParty addThirdParty(@RequestBody ThirdPartyDTO thirdPartyDTO){
         return  adminService.addThirdParty(thirdPartyDTO);
     }
+    @GetMapping("/admin/third_party/")
+    @ResponseStatus(HttpStatus.FOUND)
+    public List<ThirdParty> getAllThirdParties() {
+        return adminService.getAllThirdPartiesByAdmin();
+    }
+
 
     // ---- CREATE ACCOUNHOLDER
     @PostMapping("/admin/account_holder/")

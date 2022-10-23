@@ -111,12 +111,6 @@ public class AdminService implements AdminServiceInterface {
         return accountRepository.save(creditCardInput);
     }
 
-    // ---- DELETE ACCOUNTS
-    public void deleteAccountById(Long id) {
-        accountRepository.deleteById(id);
-    }
-
-
     // ---- CRREATE THIRDPARTY
     @Override
     public ThirdParty addThirdParty(ThirdPartyDTO thirdPartyDTO) {
@@ -125,6 +119,15 @@ public class AdminService implements AdminServiceInterface {
         ThirdParty newThirdParty = new ThirdParty(userName, hashedKey);
         return thirdPartyRepository.save(newThirdParty);
     }
+    public List<ThirdParty> getAllThirdPartiesByAdmin() {
+        return thirdPartyRepository.findAll();
+    }
+
+    // ---- DELETE ACCOUNTS
+    public void deleteAccountById(Long id) {
+        accountRepository.deleteById(id);
+    }
+
 
     // ---- CRREATE ACCOUNTHOLDER
     public AccountHolder createAccountHolderWITHDTO(AccountHolderDTO accountDTO){
