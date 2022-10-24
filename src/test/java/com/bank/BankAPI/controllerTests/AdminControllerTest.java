@@ -11,6 +11,7 @@ import com.bank.BankAPI.models.others.Money;
 import com.bank.BankAPI.repositories.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +39,7 @@ public class AdminControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
     private MockMvc mockMvc;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @Autowired
     AccountRepository accountRepository;
@@ -198,11 +199,11 @@ public class AdminControllerTest {
     @Test
     @DisplayName("Creating Account Holders")
     void creatin_AccountHolders_ok() throws Exception {
-        //AccountHolderDTO accountHolderDTO = new AccountHolderDTO("Dario Son", LocalDate.of(1992, 2, 24), "Calabria 21", "BCN", "08010", null, null, null);
-        AccountHolder accountHolder = accountHolder1;
-        String body = objectMapper.writeValueAsString(accountHolder);
+        AccountHolderDTO accountHolderDTO = new AccountHolderDTO("Dario Son", LocalDate.of(1992, 2, 24), "Calabria 21", "BCN", "08010", null, null, null);
+        String body = objectMapper.writeValueAsString(accountHolderDTO);
+
         MvcResult mvcResult = mockMvc.perform(post("/admin/account_holder/").content(body)
                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
-        //assertTrue(mvcResult.getResponse().getContentAsString().contains(accountHolder.getUserName()));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains(accountHolderDTO.getUserName()));
     }
 }
