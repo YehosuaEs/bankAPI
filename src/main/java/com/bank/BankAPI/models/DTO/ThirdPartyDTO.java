@@ -29,5 +29,10 @@ public class ThirdPartyDTO {
         this.transferAmount = transferAmount;
         this.secretKey = secretKey;
     }
+
+    public ThirdPartyDTO(String userName, String hashedKey) {
+        this.userName = userName;
+        this.hashedKey = hashedKey;
+    }
 }
 

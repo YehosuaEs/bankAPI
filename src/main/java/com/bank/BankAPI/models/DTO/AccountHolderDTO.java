@@ -12,15 +12,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class AccountHolderDTO {
 
-    private String balance;
     @NotNull
     private String userName;
-    private String secretKey;
-    private Long primaryOwnerId;
-    private Long secondaryOwnerId;
-    private String minimBalance;
-    private String interestRate;
-    private String creditLimit;
     @NotNull
     private LocalDate birthDate;
     @NotNull
@@ -33,16 +26,8 @@ public class AccountHolderDTO {
     private String secondaryCity;
     private String secondaryZipCode;
 
-
-    public AccountHolderDTO(String balance, String userName, String secretKey, Long primaryOwnerId, Long secondaryOwnerId, String minimBalance, String interestRate, String creditLimit, LocalDate birthDate, String address, String city, String zipCode, String secondaryAddress, String secondaryCity, String secondaryZipCode) {
-        this.balance = balance;
+    public AccountHolderDTO(String userName, LocalDate birthDate, String address, String city, String zipCode, String secondaryAddress, String secondaryCity, String secondaryZipCode) {
         this.userName = userName;
-        this.secretKey = secretKey;
-        this.primaryOwnerId = primaryOwnerId;
-        this.secondaryOwnerId = secondaryOwnerId;
-        this.minimBalance = minimBalance;
-        this.interestRate = interestRate;
-        this.creditLimit = creditLimit;
         this.birthDate = birthDate;
         this.address = address;
         this.city = city;
@@ -53,4 +38,14 @@ public class AccountHolderDTO {
     }
 
 
+  /* public AccountHolderDTO(String userName, LocalDate birthDate, String address, String city, String zipCode, String secondaryAddress, String secondaryCity, String secondaryZipCode) {
+        this.userName = userName;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.city = city;
+        this.zipCode = zipCode;
+        this.secondaryAddress = secondaryAddress;
+        this.secondaryCity = secondaryCity;
+        this.secondaryZipCode = secondaryZipCode;
+    }*/
 }

@@ -47,7 +47,7 @@ public class AdminController {
     // ---- CREATE ACCOUNTS (Checking, Saving, CreditCard)
     @PostMapping("/admin/accounts/add_checking")
     @ResponseStatus(HttpStatus.CREATED)
-    public Account addCheckingAccount(@RequestBody @Valid AccountDTO account) {
+    public Account addCheckingAccount(@RequestBody AccountDTO account) {
         return adminService.addAccountCheckingWithDTO(account);
     }
 
